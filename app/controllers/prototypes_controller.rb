@@ -1,5 +1,6 @@
 class PrototypesController < ApplicationController
   before_action :move_to_index, except: [:index, :show]
+  before_action :set_prototype, only: [:edit, :show, :update]
 
   def index
     @prototypes = Prototype.all
@@ -19,24 +20,21 @@ class PrototypesController < ApplicationController
   end
 
   def show
-    @prototype = Prototype.find(params[:id])
     @comment = Comment.new
     @comments = @prototype.comments.includes(:user)
   end
 
   def edit
-    @prototype = Prototype.find(params[:id])
     unless @prototype.user_id == current_user.id  && current_user.id == @prototype.user_id
       redirect_to action: :index
     end
   end
 
   def update
-    prototype = Prototype.find(params[:id])
-    if prototype.update(prototype_params)
-      redirect_to prototype_path
+    if @prototype.update(prototype_params)
+       redirect_to prototype_path
     else
-      render :edit
+       render :edit
     end
   end
 
@@ -58,4 +56,7 @@ class PrototypesController < ApplicationController
     end
   end 
 
+  def set_prototype
+    @prototype = Prototype.find(params[:id])
+  end
 end
